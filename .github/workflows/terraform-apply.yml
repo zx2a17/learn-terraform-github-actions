@@ -1,10 +1,8 @@
 name: "Terraform Apply"
 
 on:
-  push:
-    branches:
-      - main
-
+  pull_request:
+    types: [labeled]
 env:
   TF_CLOUD_ORGANIZATION: "LearningAcademy"
   TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
@@ -13,7 +11,7 @@ env:
 
 jobs:
   terraform:
-    if: github.repository != 'hashicorp-education/learn-terraform-github-actions'
+    if: contains(github.event.pull_request.labels.*.name, 'spin up')
     name: "Terraform Apply"
     runs-on: ubuntu-latest
     permissions:
