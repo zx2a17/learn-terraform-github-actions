@@ -1,10 +1,8 @@
 name: "Terraform Apply"
 
 on:
-  push:
-    branches:
-      - main
-
+  pull_request:
+    types: [labeled]
 env:
   TF_CLOUD_ORGANIZATION: "LearningAcademy"
   TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
@@ -12,8 +10,8 @@ env:
   CONFIG_DIRECTORY: "./"
 
 jobs:
-  terraform:
-    if: github.repository != 'hashicorp-education/learn-terraform-github-actions'
+  terraform-app:
+    if: contains(github.event.pull_request.labels.*.name, 'spin up')
     name: "Terraform Apply"
     runs-on: ubuntu-latest
     permissions:
@@ -43,3 +41,21 @@ jobs:
         with:
           run: ${{ steps.apply-run.outputs.run_id }}
           comment: "Apply Run from GitHub Actions CI ${{ github.sha }}"
+   
+  terraform-des:
+    runs-on: ubuntu-latest
+    if: contains(github.event.pull_request.labels.*.name, 'spin down')
+    name: Destroy testing workspace
+    permissions:
+         contents: read
+    steps:
+          - name: Checkout
+            uses: actions/checkout@v4
+    
+          - name: terraform destroy
+            uses: dflook/terraform-destroy-workspace@v1
+            with:
+              workspace: ${{ github.head_ref }}       
+
+   
+        
