@@ -43,9 +43,9 @@ jobs:
           comment: "Apply Run from GitHub Actions CI ${{ github.sha }}"
    
   terraform-des:
+    runs-on: ubuntu-latest
     if: contains(github.event.pull_request.labels.*.name, 'spin down')
     name: Destroy testing workspace
-    runs-on: ubuntu-latest
     permissions:
          contents: read
     steps:
