@@ -10,7 +10,7 @@ env:
   CONFIG_DIRECTORY: "./"
 
 jobs:
-  terraform:
+  terraform-app:
     if: contains(github.event.pull_request.labels.*.name, 'spin up')
     name: "Terraform Apply"
     runs-on: ubuntu-latest
@@ -41,3 +41,22 @@ jobs:
         with:
           run: ${{ steps.apply-run.outputs.run_id }}
           comment: "Apply Run from GitHub Actions CI ${{ github.sha }}"
+   
+  terraform-des:
+    if: contains(github.event.pull_request.labels.*.name, 'spin down')
+    name: Destroy testing workspace
+    runs-on: ubuntu-latest
+    permissions:
+         contents: read
+    steps:
+          - name: Checkout
+            uses: actions/checkout@v4
+    
+          - name: terraform destroy
+            uses: dflook/terraform-destroy-workspace@v1
+            with:
+              path: terraform
+              workspace: ${{ github.head_ref }}       
+
+   
+        
